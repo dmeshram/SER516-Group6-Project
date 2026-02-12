@@ -20,32 +20,43 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Detect build tool
-        id: detect
-        shell: bash
+
+      - name: Check for Maven
         run: |
-          if [ -f "./gradlew" ]; then
-            echo "tool=gradle" >> $GITHUB_OUTPUT
-          elif [ -f "pom.xml" ]; then
-            echo "tool=maven" >> $GITHUB_OUTPUT
-          else
-            echo "tool=none" >> $GITHUB_OUTPUT
+          if [ ! -f "pom.xml" ]; then
+            echo "No pom.xml found in repository root."
+            exit 1
           fi
 
-      - name: Fail if no build tool found
-        if: steps.detect.outputs.tool == 'none'
-        run: |
-          echo "No Gradle wrapper (./gradlew) or pom.xml found." >&2
-          exit 1
-
-      - name: Grant execute permission for Gradle wrapper
-        if: steps.detect.outputs.tool == 'gradle'
-        run: chmod +x ./gradlew
-
-      - name: Build + Test (Gradle)
-        if: steps.detect.outputs.tool == 'gradle'
-        run: ./gradlew clean test --no-daemon
-
       - name: Build + Test (Maven)
-        if: steps.detect.outputs.tool == 'maven'
         run: mvn -B -ntp clean test
+
+      # - name: Detect build tool
+      #   id: detect
+      #   shell: bash
+      #   run: |
+      #     if [ -f "./gradlew" ]; then
+      #       echo "tool=gradle" >> $GITHUB_OUTPUT
+      #     elif [ -f "pom.xml" ]; then
+      #       echo "tool=maven" >> $GITHUB_OUTPUT
+      #     else
+      #       echo "tool=none" >> $GITHUB_OUTPUT
+      #     fi
+
+      # - name: Fail if no build tool found
+      #   if: steps.detect.outputs.tool == 'none'
+      #   run: |
+      #     echo "No Gradle wrapper (./gradlew) or pom.xml found." >&2
+      #     exit 1
+
+      # - name: Grant execute permission for Gradle wrapper
+      #   if: steps.detect.outputs.tool == 'gradle'
+      #   run: chmod +x ./gradlew
+
+      # - name: Build + Test (Gradle)
+      #   if: steps.detect.outputs.tool == 'gradle'
+      #   run: ./gradlew clean test --no-daemon
+
+      # - name: Build + Test (Maven)
+      #   if: steps.detect.outputs.tool == 'maven'
+      #   run: mvn -B -ntp clean test
