@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  metrics-scanner:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: ser516-metrics-scanner
+    volumes:
+      # Mount a local Java project to scan inside the container
+      - ../:/project:ro
+    # Override the default scan path if needed:
+    # command: ["/project/src"]
