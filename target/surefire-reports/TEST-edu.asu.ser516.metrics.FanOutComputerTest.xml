@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="SampleTest" time="0.0" tests="1" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="edu.asu.ser516.metrics.FanOutComputerTest" time="0.027" tests="5" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="17"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -55,5 +55,9 @@
     <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.class.version" value="61.0"/>
   </properties>
-  <testcase name="ciRuns" classname="SampleTest" time="0.0"/>
+  <testcase name="excludesSelfReferences" classname="edu.asu.ser516.metrics.FanOutComputerTest" time="0.013"/>
+  <testcase name="emptyInputReturnsEmptyMap" classname="edu.asu.ser516.metrics.FanOutComputerTest" time="0.0"/>
+  <testcase name="multipleClassesWithDifferentFanOut" classname="edu.asu.ser516.metrics.FanOutComputerTest" time="0.001"/>
+  <testcase name="computesDistinctFanOutPerClass" classname="edu.asu.ser516.metrics.FanOutComputerTest" time="0.0"/>
+  <testcase name="classWithNoOutgoingReferencesNotInResult" classname="edu.asu.ser516.metrics.FanOutComputerTest" time="0.0"/>
 </testsuite>
