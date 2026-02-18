@@ -13,8 +13,8 @@ public class OutgoingRefMain {
         }
         Path root = Path.of(args[0]);
         List<java.nio.file.Path> javaFiles = SourceScanner.findJavaFiles(root);
-        Set<String> projectClasses = ClassIndexBuilder.buildProjectClassIndex(javaFiles);
-        Map<String, Set<String>> outgoing = OutgoingReferenceExtractor.extractOutgoingRefs(javaFiles, projectClasses);
+        Map<String, Set<String>> outgoing =
+                OutgoingReferenceExtractor.extractOutgoingRefs(javaFiles);
         outgoing.forEach((cls, deps) -> {
             System.out.println(cls + " -> " + deps.size() + " deps");
             deps.stream().sorted().forEach(d -> System.out.println("   - " + d));
