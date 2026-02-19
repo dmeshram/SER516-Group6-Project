@@ -8,17 +8,13 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                dir('SER516-Group6-Project') {
-                    sh 'mvn clean compile'
-                }
+                sh 'mvn clean compile'
             }
         }
 
         stage('Test') {
             steps {
-                dir('SER516-Group6-Project') {
-                    sh 'mvn test'
-                }
+                sh 'mvn test'
             }
         }
     }
