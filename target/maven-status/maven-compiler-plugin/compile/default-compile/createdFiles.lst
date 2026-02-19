@@ -1,3 +1,5 @@
+edu/asu/ser516/metrics/FanOutComputer.class
+edu/asu/ser516/metrics/ClassReference.class
 edu/asu/ser516/metrics/SourceScanner.class
 edu/asu/ser516/metrics/ClassIndexBuilder.class
 edu/asu/ser516/metrics/SingleFileParserMain.class
