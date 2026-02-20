@@ -12,15 +12,19 @@ Fan-In | Fan-Out
 
 ## Project Overview
 
-This project is developed as part of SER 516 – Software Agility.  
-The team follows agile principles and tracks all development activities in Taiga.
-
-The primary architectural metric monitored in this project is:
-
-- **Fan-In**: Number of modules depending on a given module.
-- **Fan-Out**: Number of modules a given module depends on.
-
-These metrics help evaluate coupling and maintainability of the system.
+This project implements class-level Fan-In and Fan-Out metrics for Java projects.
+The tool:
+- Parses Java source files
+- Identifies class-to-class dependencies
+- Computes:
+  - Fan-Out → Number of distinct outbound dependencies from a class
+  - Fan-In → Number of distinct inbound dependencies to a class
+- Outputs structured results in:
+  - JSON
+  - CSV
+  - Console output
+- Runs via command line
+- Integrates with Jenkins CI pipeline
 
 ## Tech Stack
 
@@ -34,24 +38,65 @@ These metrics help evaluate coupling and maintainability of the system.
 ## Project Structure
 
 SER516-Group6-Project/
-│── src/
-│   ├── main/java/
-│   └── test/java/
-│── pom.xml
-│── Jenkinsfile
-│── .github/workflows/ci.yml
-│── README.md
+│
+├── src/
+│   ├── main/java/edu/asu/ser516/metrics/
+│   │   ├── FanOutComputerMain.java
+│   │   ├── SourceScanner.java
+│   │   ├── ...
+│   │
+│   └── test/
+│
+├── pom.xml
+├── Jenkinsfile
+├── docker/
+├── README.md
+└── target/
 
-## Build & Test (Without IDE)
+## Get Started with the Project
+## 1. Clone the Repository.
+git clone https://github.com/dmeshram/SER516-Group6-Project.git
+cd SER516-Group6-Project
 
-This project builds and runs tests using Maven.
+## Build the Project
+mvn clean install
 
-### Run Tests
-```bash
-mvn clean test
+## Run the Application
+mvn clean -DskipTests compile
 
-Compile:
-mvn clean compile
+mvn exec:java \
+-Dexec.mainClass="edu.asu.ser516.metrics.FanOutComputerMain" \
+-Dexec.args="input/Simple-Java-Calculator/src"
 
-Package:
-mvn clean package
+mvn exec:java \
+-Dexec.mainClass="edu.asu.ser516.metrics.FanOutComputerMain" \
+-Dexec.args="input/Simple-Java-Calculator/src both out"
+
+## CI/CD - Jenkins Integration
+This project includes:
+- Jenkinsfile
+- Automated pipeline stages:
+- Checkout
+- Build
+- Test
+- Generate metrics
+- Archive artifacts
+## To Run in Jenkins:
+- Create a new Pipeline job
+- Connect GitHub repository
+- Set:
+  - Pipeline script from SCM
+  - Branch: develop or main
+- Build the project
+
+## How Fan-Out is Calculated
+
+For each class:
+1. Parse imports and type usages
+2. Identify distinct referenced classes
+3. Count unique outbound dependencies
+4. Store in structured format
+
+## Summary
+
+This project delivers a fully automated, CI-integrated tool for computing class-level Fan-In and Fan-Out metrics for Java applications, aligned with Agile development practices and sprint-based tracking.
