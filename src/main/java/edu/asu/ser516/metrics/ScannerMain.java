@@ -11,7 +11,18 @@ public class ScannerMain {
         }
         Path root = Path.of(args[0]);
         List<java.nio.file.Path> files = SourceScanner.findJavaFiles(root);
-        System.out.println("Found .java files: " + files.size());
-        files.stream().limit(10).forEach(p -> System.out.println(" - " + p));
+        
+        CouplingAnalyzer analyzer = new CouplingAnalyzer(files);
+        analyzer.analyze();
+        
+        var fanOut = analyzer.getFanOut();
+        var fanIn = analyzer.getFanIn();
+        
+        System.out.println("--- Coupling Metrics ---");
+        fanOut.keySet().stream().sorted().forEach(className -> {
+            int out = fanOut.getOrDefault(className, 0);
+            int in = fanIn.getOrDefault(className, 0);
+            System.out.printf("Class: %s, Fan-Out: %d, Fan-In: %d%n", className, out, in);
+        });
     }
 }
