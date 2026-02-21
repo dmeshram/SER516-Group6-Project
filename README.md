@@ -42,16 +42,37 @@ SER516-Group6-Project/
 │── .github/workflows/ci.yml
 │── README.md
 
-## Build & Test (Without IDE)
+## Usage
 
-This project builds and runs tests using Maven.
+After building the project with `mvn clean package`, you can run the metrics tool using the generated JAR file in the `target/` directory.
 
-### Run Tests
+### Command Line Interface
+
 ```bash
-mvn clean test
+java -jar target/ser516-group6-metrics-1.0.0.jar <input-path> [options]
+```
 
-Compile:
-mvn clean compile
+**Arguments:**
+- `<input-path>`: Path to the root directory of the Java project to analyze.
 
-Package:
-mvn clean package
+**Options:**
+- `-o, --output <file>`: Specify the output file path. If omitted, results are printed to stdout.
+- `-f, --format <fmt>`: Specify the output format. Supported formats: `text` (default), `csv`, `json`.
+- `-h, --help`: Show help message.
+
+### Examples
+
+**Analyze a project and print results to console:**
+```bash
+java -jar target/ser516-group6-metrics-1.0.0.jar /path/to/project
+```
+
+**Save results as CSV:**
+```bash
+java -jar target/ser516-group6-metrics-1.0.0.jar /path/to/project -o metrics.csv -f csv
+```
+
+**Save results as JSON:**
+```bash
+java -jar target/ser516-group6-metrics-1.0.0.jar /path/to/project -o metrics.json -f json
+```
