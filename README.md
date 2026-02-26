@@ -100,6 +100,12 @@ java -jar target/ser516-group6-metrics-1.0.0.jar /path/to/project -o metrics.jso
 git clone https://github.com/dmeshram/SER516-Group6-Project.git
 cd SER516-Group6-Project
 
+## Input setup
+Create a folder in root directory "Input"
+cd Input
+git clone https://github.com/pH-7/Simple-Java-Calculator.git
+cd ..
+
 ## Build the Project
 mvn clean install
 
@@ -113,6 +119,9 @@ mvn exec:java \
 mvn exec:java \
 -Dexec.mainClass="edu.asu.ser516.metrics.FanOutComputerMain" \
 -Dexec.args="input/Simple-Java-Calculator/src both out"
+
+## Output Results
+You can check the output, in "Out" folder in root directory.
 
 ## CI/CD - Jenkins Integration
 This project includes:

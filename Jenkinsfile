@@ -1,9 +1,8 @@
 pipeline {
-    agent any
-
-    tools {
-        maven 'Maven3'
-        jdk 'JDK17'
+    agent {
+        docker {
+            image 'maven:3.9.6-eclipse-temurin-17'
+        }
     }
 
     stages {
@@ -17,12 +16,6 @@ pipeline {
             steps {
                 sh 'mvn test'
             }
-        }
-    }
-
-    post {
-        always {
-            junit '**/target/surefire-reports/*.xml'
         }
     }
 }
