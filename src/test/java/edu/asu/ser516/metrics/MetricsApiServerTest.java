@@ -71,6 +71,7 @@ class MetricsApiServerTest {
         void uiClassHasExpectedFanOut() {
             JavalinTest.test(MetricsApiServer.create(), (server, client) -> {
                 var response = client.get("/metrics/fanout?path=" + ProjectPath);
+                assertNotNull(response.body());
                 String body = response.body().string();
                 assertTrue(
                         body.contains("\"simplejavacalculator.UI\""),
@@ -89,6 +90,7 @@ class MetricsApiServerTest {
         void bufferedImageCustomHasExpectedFanOut() {
             JavalinTest.test(MetricsApiServer.create(), (server, client) -> {
                 var response = client.get("/metrics/fanout?path=" + ProjectPath);
+                assertNotNull(response.body());
                 String body = response.body().string();
                 assertTrue(
                         body.contains("\"simplejavacalculator.BufferedImageCustom\""),
@@ -98,6 +100,51 @@ class MetricsApiServerTest {
                         body.contains("\"fanOut\":4"),
                         "simplejavacalculator.BufferedImageCustom must have fanOut of 4"
                 );
+            });
+        }
+    }
+
+    @Nested
+    @DisplayName("GET /metrics/fanout — error cases")
+    class FanOutErrorCases {
+        @Test
+        @DisplayName("Returns HTTP 400 when 'path' query param is missing")
+        void returns400WhenPathParamMissing() {
+            JavalinTest.test(MetricsApiServer.create(), (server, client) -> {
+                var response = client.get("/metrics/fanout");
+                assertEquals(400, response.code());
+            });
+        }
+
+        @Test
+        @DisplayName("Returns HTTP 400 when 'path' points to a non-existent directory")
+        void returns400WhenPathDoesNotExist() {
+            JavalinTest.test(MetricsApiServer.create(), (server, client) -> {
+                var response = client.get("/metrics/fanout?path=/this/path/does/not/exist");
+                assertEquals(400, response.code());
+            });
+        }
+
+        @Test
+        @DisplayName("Error response body contains a descriptive 'error' field")
+        void errorResponseContainsErrorField() {
+            JavalinTest.test(MetricsApiServer.create(), (server, client) -> {
+                var response = client.get("/metrics/fanout?path=/nonexistent");
+                assertNotNull(response.body());
+                String body = response.body().string();
+                assertTrue(
+                        body.contains("\"error\""),
+                        "Error response must contain an 'error' field, got: " + body
+                );
+            });
+        }
+
+        @Test
+        @DisplayName("Returns HTTP 400 when 'path' is an empty string")
+        void returns400WhenPathIsEmpty() {
+            JavalinTest.test(MetricsApiServer.create(), (server, client) -> {
+                var response = client.get("/metrics/fanout?path=");
+                assertEquals(400, response.code());
             });
         }
     }
