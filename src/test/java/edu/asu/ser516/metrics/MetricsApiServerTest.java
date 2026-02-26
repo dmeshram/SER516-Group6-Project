@@ -16,7 +16,6 @@ class MetricsApiServerTest {
     @Nested
     @DisplayName("GET /metrics/fanout")
     class FanOutPath {
-
         @Test
         @DisplayName("Returns HTTP 200 for a valid project path")
         void checkForValidPath() {
@@ -145,6 +144,34 @@ class MetricsApiServerTest {
             JavalinTest.test(MetricsApiServer.create(), (server, client) -> {
                 var response = client.get("/metrics/fanout?path=");
                 assertEquals(400, response.code());
+            });
+        }
+    }
+
+    @Nested
+    @DisplayName("Server state isolation")
+    class ServerStateIsolation {
+        @Test
+        @DisplayName("Two consecutive fanout requests return identical results")
+        void multipleFanOutRequests() {
+            JavalinTest.test(MetricsApiServer.create(), (server, client) -> {
+                String body1 = Objects.requireNonNull(client
+                        .get("/metrics/fanout?path=" + ProjectPath)
+                        .body()).string();
+                String body2 = Objects.requireNonNull(client
+                        .get("/metrics/fanout?path=" + ProjectPath)
+                        .body()).string();
+                assertEquals(body1, body2,
+                        "Repeated requests for the same path must return identical results");
+            });
+        }
+
+        @Test
+        @DisplayName("Unknown endpoint returns HTTP 404")
+        void unknownEndpointError() {
+            JavalinTest.test(MetricsApiServer.create(), (server, client) -> {
+                var response = client.get("/metrics/unknown");
+                assertEquals(404, response.code());
             });
         }
     }
