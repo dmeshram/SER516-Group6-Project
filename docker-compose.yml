@@ -1,0 +1,20 @@
+# PostgreSQL for Grafana fan-out metrics (snapshot + time series)
+# Start: docker compose up -d
+# Then run the Java app with JDBC_URL etc. to populate data.
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres-metrics
+    environment:
+      POSTGRES_USER: grafana
+      POSTGRES_PASSWORD: grafana
+      POSTGRES_DB: metrics
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./docker/init-fanout.sql:/docker-entrypoint-initdb.d/01-init-fanout.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U grafana -d metrics"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
