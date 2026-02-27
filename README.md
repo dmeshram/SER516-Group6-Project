@@ -457,6 +457,63 @@ Derived by inverting the Fan-Out relationships. For each class `B`, Fan-In equal
 | 0 | Unused class or application entry point |
 | 1–3 | Normal usage |
 | 4+ | Core/utility class — changes here have wide impact across the project |
+-Dexec.mainClass="edu.asu.ser516.metrics.FanOutComputerMain" \
+-Dexec.args="input/Simple-Java-Calculator/src both out"
+
+## Output Results
+You can check the output, in "Out" folder in root directory.
+
+## Grafana + PostgreSQL (metrics for dashboards)
+
+Fan-out results can be written to PostgreSQL so Grafana can visualize them (snapshot and time series).
+
+### 1. Start PostgreSQL
+
+```bash
+docker compose up -d
+```
+
+This starts Postgres on port 5432 and runs `docker/init-fanout.sql` to create the `fan_out_metrics` table.
+
+### 2. Run the app with DB write
+
+Set `JDBC_URL` (and optionally `JDBC_USER`, `JDBC_PASSWORD`), then run the fan-out pipeline as usual. Each run inserts a new snapshot (one row per class with the same timestamp).
+
+**Example (from project root):**
+
+```bash
+export JDBC_URL="jdbc:postgresql://localhost:5432/metrics"
+export JDBC_USER="grafana"
+export JDBC_PASSWORD="grafana"
+
+mvn exec:java \
+  -Dexec.mainClass="edu.asu.ser516.metrics.FanOutComputerMain" \
+  -Dexec.args="input/Simple-Java-Calculator/src"
+```
+
+If `JDBC_URL` is not set, the app skips the database write and behaves as before.
+
+### 3. Grafana
+
+- Add a **PostgreSQL** data source: host `localhost:5432` (or `host.docker.internal:5432` if Grafana runs in Docker), database `metrics`, user `grafana`, password `grafana`.
+- Use the `fan_out_metrics` table for panels (e.g. snapshot = latest `recorded_at`, time series = filter by `recorded_at`).
+
+## CI/CD - Jenkins Integration
+This project includes:
+- Jenkinsfile
+- Automated pipeline stages:
+- Checkout
+- Build
+- Test
+- Generate metrics
+- Archive artifacts
+## To Run in Jenkins:
+- Create a new Pipeline job
+- Connect GitHub repository
+- Set:
+  - Pipeline script from SCM
+  - Branch: develop or main
+- Build the project
 
 ## How Fan-Out is Calculated
 
