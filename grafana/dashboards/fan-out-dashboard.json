@@ -346,6 +346,7 @@
                     "format": "table",
                     "rawQuery": true,
                     "rawSql": "SELECT class_name AS \"Class\", fan_out AS \"Fan-Out\"\nFROM fan_out_metrics\nWHERE recorded_at = (SELECT MAX(recorded_at) FROM fan_out_metrics)\n  AND fan_out >= ${min_fanout}\n  AND class_name LIKE '%${class_filter}%'\nORDER BY fan_out DESC;",
+                    "rawSql": "SELECT class_name AS \"Class\", fan_out AS \"Fan-Out\"\nFROM fan_out_metrics\nWHERE recorded_at = (SELECT MAX(recorded_at) FROM fan_out_metrics)\n  AND fan_out >= ${min_fanout}\n  AND class_name LIKE '%${class_filter}%'\nORDER BY fan_out DESC;",
                     "refId": "A"
                 }
             ]
@@ -444,6 +445,7 @@
                     "format": "table",
                     "rawQuery": true,
                     "rawSql": "SELECT class_name AS \"Class\", fan_out AS \"Fan-Out\"\nFROM fan_out_metrics\nWHERE recorded_at = (SELECT MAX(recorded_at) FROM fan_out_metrics)\n  AND fan_out >= ${min_fanout}\n  AND class_name LIKE '%${class_filter}%'\nORDER BY fan_out DESC;",
+                    "rawSql": "SELECT class_name AS \"Class\", fan_out AS \"Fan-Out\"\nFROM fan_out_metrics\nWHERE recorded_at = (SELECT MAX(recorded_at) FROM fan_out_metrics)\n  AND fan_out >= ${min_fanout}\n  AND class_name LIKE '%${class_filter}%'\nORDER BY fan_out DESC;",
                     "refId": "A"
                 }
             ]
@@ -528,6 +530,68 @@
         "sprint-review"
     ],
     "templating": {
+        "list": [
+            {
+                "current": {
+                    "selected": false,
+                    "text": "0",
+                    "value": "0"
+                },
+                "description": "Show only classes with fan-out >= this value. Set to 0 to show all.",
+                "hide": 0,
+                "label": "Min Fan-Out",
+                "name": "min_fanout",
+                "options": [
+                    {
+                        "selected": true,
+                        "text": "0",
+                        "value": "0"
+                    },
+                    {
+                        "selected": false,
+                        "text": "1",
+                        "value": "1"
+                    },
+                    {
+                        "selected": false,
+                        "text": "3",
+                        "value": "3"
+                    },
+                    {
+                        "selected": false,
+                        "text": "5",
+                        "value": "5"
+                    },
+                    {
+                        "selected": false,
+                        "text": "10",
+                        "value": "10"
+                    }
+                ],
+                "query": "0,1,3,5,10",
+                "type": "custom"
+            },
+            {
+                "current": {
+                    "selected": false,
+                    "text": "",
+                    "value": ""
+                },
+                "description": "Filter classes by name (partial match). Leave empty to show all.",
+                "hide": 0,
+                "label": "Class Filter",
+                "name": "class_filter",
+                "options": [
+                    {
+                        "selected": true,
+                        "text": "",
+                        "value": ""
+                    }
+                ],
+                "query": "",
+                "type": "textbox"
+            }
+        ]
         "list": [
             {
                 "current": {
