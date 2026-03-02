@@ -22,10 +22,31 @@ pipeline {
         stage('Build & Verify') {
             steps {
                 sh '''
-                   mvn -B -ntp \
-                       clean verify \
+                   mvn -B -ntp clean verify \
                        -Dmaven.test.failure.ignore=false
                 '''
+            }
+        }
+
+        stage('Metrics Computation') {
+            steps {
+                script {
+                    echo "Running Fan-In / Fan-Out metrics computation..."
+
+                    sh '''
+                       mkdir -p metrics-output
+
+                       java -cp target/*.jar \
+                       edu.asu.ser516.metrics.FanOutComputerMain \
+                       . json metrics-output
+                    '''
+                }
+            }
+        }
+
+        stage('Archive Metrics') {
+            steps {
+                archiveArtifacts artifacts: 'metrics-output/**/*.json', fingerprint: true
             }
         }
     }
@@ -35,10 +56,10 @@ pipeline {
             junit 'target/surefire-reports/*.xml'
         }
         success {
-            echo "Build and verification completed successfully."
+            echo "Pipeline completed successfully with metrics generated."
         }
         failure {
-            echo "Build failed. Please check logs."
+            echo "Pipeline failed."
         }
     }
 }
