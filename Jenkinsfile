@@ -32,30 +32,30 @@ pipeline {
             steps {
                 script {
                     echo "Running Fan-In / Fan-Out metrics computation..."
-
                     sh '''
                        mkdir -p metrics-output
-
-                       java -cp target/*.jar \
-                       edu.asu.ser516.metrics.FanOutComputerMain \
-                       . json metrics-output
+                       mvn -B -ntp exec:java \
+                           -Dexec.mainClass="edu.asu.ser516.metrics.FanOutComputerMain" \
+                           -Dexec.args=". json metrics-output"
                     '''
                 }
             }
         }
 
         stage('Archive Metrics Artifacts') {
-    steps {
-        script {
-            if (fileExists('metrics-output')) {
-                echo "Archiving metrics artifacts..."
-                archiveArtifacts artifacts: 'metrics-output/**/*', fingerprint: true
-            } else {
-                error("Metrics output directory not found!")
+            steps {
+                script {
+                    if (fileExists('metrics-output')) {
+                        echo "Archiving metrics artifacts..."
+                        archiveArtifacts artifacts: 'metrics-output/**/*', fingerprint: true
+                    } else {
+                        error("Metrics output directory not found!")
+                    }
+                }
             }
         }
+
     }
-}
 
     post {
         always {
