@@ -44,12 +44,18 @@ pipeline {
             }
         }
 
-        stage('Archive Metrics') {
-            steps {
-                archiveArtifacts artifacts: 'metrics-output/**/*.json', fingerprint: true
+        stage('Archive Metrics Artifacts') {
+    steps {
+        script {
+            if (fileExists('metrics-output')) {
+                echo "Archiving metrics artifacts..."
+                archiveArtifacts artifacts: 'metrics-output/**/*', fingerprint: true
+            } else {
+                error("Metrics output directory not found!")
             }
         }
     }
+}
 
     post {
         always {
