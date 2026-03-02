@@ -4,6 +4,9 @@
 /Users/dikshantmeshram/Documents/SER 516/GroupProject/SER516-Group6-Project/src/main/java/edu/asu/ser516/metrics/CouplingAnalyzer.java
 /Users/dikshantmeshram/Documents/SER 516/GroupProject/SER516-Group6-Project/src/main/java/edu/asu/ser516/metrics/FanOutComputer.java
 /Users/dikshantmeshram/Documents/SER 516/GroupProject/SER516-Group6-Project/src/main/java/edu/asu/ser516/metrics/FanOutComputerMain.java
+/Users/dikshantmeshram/Documents/SER 516/GroupProject/SER516-Group6-Project/src/main/java/edu/asu/ser516/metrics/MethodCouplingAnalyzer.java
+/Users/dikshantmeshram/Documents/SER 516/GroupProject/SER516-Group6-Project/src/main/java/edu/asu/ser516/metrics/MetricRow.java
+/Users/dikshantmeshram/Documents/SER 516/GroupProject/SER516-Group6-Project/src/main/java/edu/asu/ser516/metrics/MetricRowSorter.java
 /Users/dikshantmeshram/Documents/SER 516/GroupProject/SER516-Group6-Project/src/main/java/edu/asu/ser516/metrics/MetricWriters.java
 /Users/dikshantmeshram/Documents/SER 516/GroupProject/SER516-Group6-Project/src/main/java/edu/asu/ser516/metrics/MetricsApiServer.java
 /Users/dikshantmeshram/Documents/SER 516/GroupProject/SER516-Group6-Project/src/main/java/edu/asu/ser516/metrics/OutgoingRefMain.java
