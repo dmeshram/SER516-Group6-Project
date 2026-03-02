@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'maven:3.9.6-eclipse-temurin-17'
-            args '-v $HOME/.m2:/root/.m2'
+            args '-v $JENKINS_HOME/.m2:/root/.m2:z'
         }
     }
 
@@ -23,7 +23,8 @@ pipeline {
             steps {
                 sh '''
                    mvn -B -ntp clean verify \
-                       -Dmaven.test.failure.ignore=false
+                                  -Dmaven.test.failure.ignore=false \
+                                  -Dmaven.repo.local=/root/.m2/repository
                 '''
             }
         }
@@ -36,7 +37,8 @@ pipeline {
                        mkdir -p metrics-output
                        mvn -B -ntp exec:java \
                            -Dexec.mainClass="edu.asu.ser516.metrics.FanOutComputerMain" \
-                           -Dexec.args=". json metrics-output"
+                           -Dexec.args=". json metrics-output" \
+                           -Dmaven.repo.local=/root/.m2/repository
                     '''
                 }
             }
@@ -59,13 +61,18 @@ pipeline {
 
     post {
         always {
-            junit 'target/surefire-reports/*.xml'
+            junit testResults: '**/surefire-reports/*.xml',
+                  allowEmptyResults: false
+            echo "Build result: ${currentBuild.currentResult}"
         }
         success {
             echo "Pipeline completed successfully with metrics generated."
         }
         failure {
-            echo "Pipeline failed."
+            echo "Pipeline FAILED. Check console output above for details."
+        }
+        unstable {
+            echo "Pipeline is UNSTABLE — test failures detected."
         }
     }
 }
