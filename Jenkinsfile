@@ -59,13 +59,16 @@ pipeline {
 
     post {
         always {
-            junit 'target/surefire-reports/*.xml'
+            junit testResults: '**/surefire-reports/*.xml'
         }
         success {
             echo "Pipeline completed successfully with metrics generated."
         }
         failure {
             echo "Pipeline failed."
+        }
+        unstable {
+            echo "Pipeline is UNSTABLE — test failures detected."
         }
     }
 }
