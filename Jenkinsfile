@@ -59,7 +59,9 @@ pipeline {
 
     post {
         always {
-            junit testResults: '**/surefire-reports/*.xml'
+            junit testResults: '**/surefire-reports/*.xml',
+                  allowEmptyResults: false
+            echo "Build result: ${currentBuild.currentResult}"
         }
         success {
             echo "Pipeline completed successfully with metrics generated."
