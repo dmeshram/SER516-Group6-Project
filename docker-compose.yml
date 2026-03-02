@@ -1,6 +1,7 @@
-# PostgreSQL for Grafana fan-out metrics (snapshot + time series)
+# PostgreSQL + Grafana stack for fan-out metrics visualization
 # Start: docker compose up -d
 # Then run the Java app with JDBC_URL etc. to populate data.
+# Grafana: http://localhost:3000 (admin / admin)
 services:
   postgres:
     image: postgres:16-alpine
@@ -18,3 +19,19 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  grafana:
+    image: grafana/grafana-oss:11.5.1
+    container_name: grafana-metrics
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
