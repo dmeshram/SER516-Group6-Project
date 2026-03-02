@@ -6,9 +6,4 @@ public class SampleTest {
     void ciRuns() {
         assertTrue(true);
     }
-
-    @Test
-    void deliberateFailure() {
-        fail("Deliberate failure to test pipeline failure handling");
-    }
 }
