@@ -69,7 +69,7 @@ pipeline {
             echo "Pipeline completed successfully with metrics generated."
         }
         failure {
-            echo "Pipeline failed."
+            echo "Pipeline FAILED. Check console output above for details."
         }
         unstable {
             echo "Pipeline is UNSTABLE — test failures detected."
