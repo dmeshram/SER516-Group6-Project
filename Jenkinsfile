@@ -23,8 +23,8 @@ pipeline {
             steps {
                 sh '''
                    mvn -B -ntp clean verify \
-                       -Dmaven.test.failure.ignore=false
-                       -Dmaven.repo.local=/root/.m2/repository
+                                  -Dmaven.test.failure.ignore=false \
+                                  -Dmaven.repo.local=/root/.m2/repository
                 '''
             }
         }
