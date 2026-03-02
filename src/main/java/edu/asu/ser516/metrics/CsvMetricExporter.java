@@ -8,14 +8,13 @@ import java.util.List;
 public class CsvMetricExporter {
 
     private static final String FILE_NAME = "fanout.csv";
+    private static final String HEADER = "metricType,scope,entity,value,packageName,filePath";
 
     public void export(List<MetricRow> rows, Path outDir) throws IOException {
         Files.createDirectories(outDir);
 
         Path outFile = outDir.resolve(FILE_NAME);
 
-        if (!Files.exists(outFile)) {
-            Files.createFile(outFile);
-        }
+        Files.writeString(outFile, HEADER + System.lineSeparator());
     }
 }
