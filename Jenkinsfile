@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'maven:3.9.6-eclipse-temurin-17'
-            args '-v $HOME/.m2:/root/.m2'
+            args '-v $JENKINS_HOME/.m2:/root/.m2:z'
         }
     }
 
@@ -24,6 +24,7 @@ pipeline {
                 sh '''
                    mvn -B -ntp clean verify \
                        -Dmaven.test.failure.ignore=false
+                       -Dmaven.repo.local=/root/.m2/repository
                 '''
             }
         }
