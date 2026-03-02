@@ -56,26 +56,4 @@ class CsvMetricExporterTest {
         assertEquals(2, lines.size(), "Expected header + 1 data row");
         assertEquals("FAN_OUT,CLASS,simplejavacalculator.UI,13,simplejavacalculator,UI.java", lines.get(1));
     }
-
-    @Test
-    void writesOneRowCorrectly() throws Exception {
-        CsvMetricExporter exporter = new CsvMetricExporter();
-
-        MetricRow row = new MetricRow(
-                MetricType.FAN_OUT,
-                Scope.CLASS,
-                "simplejavacalculator.UI",
-                13,
-                "simplejavacalculator",
-                "UI.java"
-        );
-
-        exporter.export(List.of(row), tempDir);
-
-        Path outFile = tempDir.resolve("fanout.csv");
-        List<String> lines = Files.readAllLines(outFile);
-
-        assertEquals(2, lines.size(), "Expected header + 1 data row");
-        assertEquals("FAN_OUT,CLASS,simplejavacalculator.UI,13,simplejavacalculator,UI.java", lines.get(1));
-    }
 }
