@@ -18,7 +18,9 @@ public class CsvMetricExporter {
         List<String> lines = new ArrayList<>();
         lines.add(HEADER);
 
-        for (MetricRow r : rows) {
+        List<MetricRow> sorted = MetricRowSorter.sort(rows);
+
+        for (MetricRow r : sorted) {
             lines.add(toCsvLine(r));
         }
 
