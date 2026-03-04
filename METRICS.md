@@ -40,3 +40,34 @@
 **Definition**: The number of other classes (within the project) that reference the target class. High fan-in suggests a class is a common utility or core component; changing it may break many other classes.
 
 *Derived strictly by reversing the Fan-Out relationships defined above.*
+
+### Computation Rules
+
+**Unit of Analysis:**
+- A Java method or constructor declared in `.java` files under the configured input path.
+
+**Function Identity (Canonical ID):**
+- `<package>.<Class>#<method>(<paramTypes>)`
+- Constructors use: `<package>.<Class>#<init>(<paramTypes>)`
+
+**Dependencies (What counts):**
+A function `Caller` contributes to Fan-In of function `Callee` if `Caller` contains:
+- A direct or instance method call to `Callee`
+- A static method call to `Callee`
+- A constructor invocation `new ClassName(...)` (counts as a call to `<init>`)
+
+**Exclusions (What to ignore):**
+- Self-call: `Caller == Callee` does not count.
+- Duplicate calls: Multiple calls from the same `Caller` to the same `Callee` count once (distinct caller rule).
+- External library/JDK calls (e.g., `java.*`, `javax.*`, `jdk.*`, `sun.*`) are ignored.
+- Unresolved calls (calls that cannot be resolved to a method declared within the scanned project source) are ignored.
+
+**Counting:**
+- Fan-In(Callee) = number of **distinct caller functions** that call `Callee` at least once.
+- Example: If `A#a()` calls `B#b()` twice and `C#c()` calls `B#b()` once, then Fan-In(`B#b()`) = 2.
+
+### Examples
+
+```java
+class A { void a(){ B.b(); } }
+class B { static void b(){} }
