@@ -1,3 +1,4 @@
+edu/asu/ser516/metrics/MetricsApiServer.class
 edu/asu/ser516/metrics/ReferenceAdapters.class
 edu/asu/ser516/metrics/OutgoingRefMain.class
 edu/asu/ser516/metrics/FanOutComputerMain.class
@@ -5,9 +6,11 @@ edu/asu/ser516/metrics/MetricWriters.class
 edu/asu/ser516/metrics/ClassReference.class
 edu/asu/ser516/metrics/OutgoingReferenceExtractor$FileContext.class
 edu/asu/ser516/metrics/SourceScanner.class
+edu/asu/ser516/metrics/CouplingAnalyzer.class
 edu/asu/ser516/metrics/OutgoingReferenceExtractor.class
 edu/asu/ser516/metrics/FanOutComputer.class
 edu/asu/ser516/metrics/ClassIndexBuilder.class
 edu/asu/ser516/metrics/SingleFileParserMain.class
+edu/asu/ser516/metrics/MethodCouplingAnalyzer.class
 edu/asu/ser516/metrics/ClassIndexMain.class
 edu/asu/ser516/metrics/ScannerMain.class
