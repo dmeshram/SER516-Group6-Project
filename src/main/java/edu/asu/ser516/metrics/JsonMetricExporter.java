@@ -28,25 +28,25 @@ public class JsonMetricExporter {
             root.put("metric", rows.get(0).getMetricType().name());
             root.put("scope", rows.get(0).getScope().name());
         } else {
-            root.put("metric", "unknown");
-            root.put("scope", "unknown");
+            root.put("metric", "UNKNOWN");
+            root.put("scope", "UNKNOWN");
         }
 
         ArrayNode resultsArray = mapper.createArrayNode();
 
         for (MetricRow row : rows) {
-            ObjectNode node = mapper.createObjectNode();
-            node.put("entity", row.getEntity());
-            node.put("package", row.getPackageName());
-            node.put("file", row.getFilePath());
-            node.put("value", row.getValue());
-            resultsArray.add(node);
+            ObjectNode resultNode = mapper.createObjectNode();
+            resultNode.put("entity", row.getEntity());
+            resultNode.put("package", row.getPackageName());
+            resultNode.put("file", row.getFilePath());
+            resultNode.put("value", row.getValue());
+
+            resultsArray.add(resultNode);
         }
 
         root.set("results", resultsArray);
 
-        mapper.writerWithDefaultPrettyPrinter()
-              .writeValue(outputFile.toFile(), root);
+        mapper.writerWithDefaultPrettyPrinter().writeValue(outputFile.toFile(), root);
 
         return outputFile;
     }

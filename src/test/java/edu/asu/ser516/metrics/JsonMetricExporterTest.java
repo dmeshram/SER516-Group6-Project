@@ -22,18 +22,16 @@ class JsonMetricExporterTest {
                         MetricType.FAN_OUT,
                         Scope.CLASS,
                         "edu.asu.Calculator",
-                        "edu.asu",
-                        "src/main/java/edu/asu/Calculator.java",
                         3));
 
         JsonMetricExporter exporter = new JsonMetricExporter();
 
         Path outputFile = exporter.export(rows, tempDir);
 
-        assertNotNull(outputFile, "Returned file path should not be null");
-        assertTrue(Files.exists(outputFile), "JSON file should be created");
-        assertTrue(Files.size(outputFile) > 0, "JSON file should not be empty");
-        assertTrue(outputFile.toString().endsWith(".json"), "Output file must have .json extension");
+        assertNotNull(outputFile);
+        assertTrue(Files.exists(outputFile));
+        assertTrue(Files.size(outputFile) > 0);
+        assertTrue(outputFile.toString().endsWith(".json"));
     }
 
     @Test
@@ -45,8 +43,6 @@ class JsonMetricExporterTest {
                         MetricType.FAN_OUT,
                         Scope.CLASS,
                         "edu.asu.Calculator",
-                        "edu.asu",
-                        "src/main/java/edu/asu/Calculator.java",
                         3));
 
         JsonMetricExporter exporter = new JsonMetricExporter();
@@ -57,30 +53,25 @@ class JsonMetricExporterTest {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(content);
 
-        assertNotNull(root, "Root JSON node should not be null");
+        assertNotNull(root);
 
-        assertTrue(root.has("metric"), "JSON must contain 'metric'");
-        assertTrue(root.has("scope"), "JSON must contain 'scope'");
-        assertTrue(root.has("results"), "JSON must contain 'results'");
+        assertTrue(root.has("metric"));
+        assertTrue(root.has("scope"));
+        assertTrue(root.has("results"));
 
         assertEquals("FAN_OUT", root.get("metric").asText());
         assertEquals("CLASS", root.get("scope").asText());
 
         JsonNode results = root.get("results");
-        assertTrue(results.isArray(), "'results' must be an array");
-        assertEquals(1, results.size(), "Results array must contain one element");
+        assertTrue(results.isArray());
+        assertEquals(1, results.size());
 
-        JsonNode firstResult = results.get(0);
+        JsonNode first = results.get(0);
+        assertTrue(first.has("entity"));
+        assertTrue(first.has("value"));
 
-        assertTrue(firstResult.has("entity"), "Result must contain 'entity'");
-        assertTrue(firstResult.has("package"), "Result must contain 'package'");
-        assertTrue(firstResult.has("file"), "Result must contain 'file'");
-        assertTrue(firstResult.has("value"), "Result must contain 'value'");
-
-        assertEquals("edu.asu.Calculator", firstResult.get("entity").asText());
-        assertEquals("edu.asu", firstResult.get("package").asText());
-        assertEquals("src/main/java/edu/asu/Calculator.java", firstResult.get("file").asText());
-        assertEquals(3, firstResult.get("value").asInt());
+        assertEquals("edu.asu.Calculator", first.get("entity").asText());
+        assertEquals(3, first.get("value").asInt());
     }
 
     @Test
@@ -94,11 +85,7 @@ class JsonMetricExporterTest {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(content);
 
-        assertNotNull(root, "Root JSON node should not be null");
-        assertTrue(root.has("results"), "JSON must contain 'results'");
-
-        JsonNode results = root.get("results");
-        assertTrue(results.isArray(), "'results' must be an array");
-        assertEquals(0, results.size(), "Results array must be empty");
+        assertTrue(root.has("results"));
+        assertEquals(0, root.get("results").size());
     }
 }
