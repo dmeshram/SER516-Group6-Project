@@ -15,12 +15,10 @@ public class JsonMetricExporter {
 
     public Path export(List<MetricRow> rows, Path outputDir) throws IOException {
 
-        if (!Files.exists(outputDir)) {
-            Files.createDirectories(outputDir);
-        }
-
-        String fileName = "metrics_" + System.currentTimeMillis() + ".json";
-        Path outputFile = outputDir.resolve(fileName);
+        Path outputFile = ExportFileManager.prepareOutputFile(
+                outputDir,
+                rows.isEmpty() ? "unknown" : rows.get(0).getMetricType().name(),
+                "json");
 
         ObjectNode root = mapper.createObjectNode();
 

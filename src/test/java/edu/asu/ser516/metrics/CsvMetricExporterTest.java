@@ -7,8 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class CsvMetricExporterTest {
 
@@ -16,20 +15,22 @@ class CsvMetricExporterTest {
     Path tempDir;
 
     @Test
-    void createsCsvFileInOutputDirWithCorrectFilename() throws Exception {
+    void createsCsvFileInOutputDir() throws Exception {
         CsvMetricExporter exporter = new CsvMetricExporter();
-        exporter.export(List.of(), tempDir);
 
-        Path outFile = tempDir.resolve("fanout.csv");
-        assertTrue(Files.exists(outFile), "Expected CSV file to be created: " + outFile);
+        Path outFile = exporter.export(List.of(), tempDir);
+
+        assertNotNull(outFile);
+        assertTrue(Files.exists(outFile), "Expected CSV file to be created");
+        assertTrue(outFile.toString().endsWith(".csv"));
     }
 
     @Test
     void writesHeaderAsFirstLine() throws Exception {
         CsvMetricExporter exporter = new CsvMetricExporter();
-        exporter.export(List.of(), tempDir);
 
-        Path outFile = tempDir.resolve("fanout.csv");
+        Path outFile = exporter.export(List.of(), tempDir);
+
         String firstLine = Files.readAllLines(outFile).get(0);
 
         assertEquals("metricType,scope,entity,value,packageName,filePath", firstLine);
@@ -45,12 +46,10 @@ class CsvMetricExporterTest {
                 "simplejavacalculator.UI",
                 13,
                 "simplejavacalculator",
-                "UI.java"
-        );
+                "UI.java");
 
-        exporter.export(List.of(row), tempDir);
+        Path outFile = exporter.export(List.of(row), tempDir);
 
-        Path outFile = tempDir.resolve("fanout.csv");
         List<String> lines = Files.readAllLines(outFile);
 
         assertEquals(2, lines.size(), "Expected header + 1 data row");
@@ -60,9 +59,9 @@ class CsvMetricExporterTest {
     @Test
     void emptyListProducesHeaderOnly() throws Exception {
         CsvMetricExporter exporter = new CsvMetricExporter();
-        exporter.export(List.of(), tempDir);
 
-        Path outFile = tempDir.resolve("fanout.csv");
+        Path outFile = exporter.export(List.of(), tempDir);
+
         List<String> lines = Files.readAllLines(outFile);
 
         assertEquals(1, lines.size(), "Expected only header line for empty input");
@@ -76,11 +75,10 @@ class CsvMetricExporterTest {
         MetricRow a10 = new MetricRow(MetricType.FAN_OUT, Scope.CLASS, "A", 10, null, null);
         MetricRow b10 = new MetricRow(MetricType.FAN_OUT, Scope.CLASS, "B", 10, null, null);
         MetricRow c20 = new MetricRow(MetricType.FAN_OUT, Scope.CLASS, "C", 20, null, null);
-        MetricRow d5  = new MetricRow(MetricType.FAN_OUT, Scope.CLASS, "D", 5,  null, null);
+        MetricRow d5 = new MetricRow(MetricType.FAN_OUT, Scope.CLASS, "D", 5, null, null);
 
-        exporter.export(List.of(a10, d5, b10, c20), tempDir);
+        Path outFile = exporter.export(List.of(a10, d5, b10, c20), tempDir);
 
-        Path outFile = tempDir.resolve("fanout.csv");
         List<String> lines = Files.readAllLines(outFile);
 
         assertEquals(5, lines.size());
@@ -88,6 +86,6 @@ class CsvMetricExporterTest {
         assertEquals("FAN_OUT,CLASS,C,20,,", lines.get(1));
         assertEquals("FAN_OUT,CLASS,A,10,,", lines.get(2));
         assertEquals("FAN_OUT,CLASS,B,10,,", lines.get(3));
-        assertEquals("FAN_OUT,CLASS,D,5,,",  lines.get(4));
+        assertEquals("FAN_OUT,CLASS,D,5,,", lines.get(4));
     }
 }
