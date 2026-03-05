@@ -88,4 +88,34 @@ class JsonMetricExporterTest {
         assertTrue(root.has("results"));
         assertEquals(0, root.get("results").size());
     }
+
+    @Test
+    void shouldSerializeResultsInDescendingOrderByValue() throws Exception {
+        Path tempDir = Files.createTempDirectory("json-metrics-test");
+
+        List<MetricRow> rows = List.of(
+                new MetricRow(MetricType.FAN_OUT, Scope.CLASS, "ClassA", 2),
+                new MetricRow(MetricType.FAN_OUT, Scope.CLASS, "ClassC", 5),
+                new MetricRow(MetricType.FAN_OUT, Scope.CLASS, "ClassB", 3));
+
+        JsonMetricExporter exporter = new JsonMetricExporter();
+
+        Path outputFile = exporter.export(rows, tempDir);
+        String content = Files.readString(outputFile);
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(content);
+        JsonNode results = root.get("results");
+
+        assertEquals(3, results.size());
+
+        assertEquals("ClassC", results.get(0).get("entity").asText());
+        assertEquals(5, results.get(0).get("value").asInt());
+
+        assertEquals("ClassB", results.get(1).get("entity").asText());
+        assertEquals(3, results.get(1).get("value").asInt());
+
+        assertEquals("ClassA", results.get(2).get("entity").asText());
+        assertEquals(2, results.get(2).get("value").asInt());
+    }
 }
