@@ -32,9 +32,13 @@ public class JsonMetricExporter {
             root.put("scope", "UNKNOWN");
         }
 
+        List<MetricRow> sortedRows = rows.stream()
+                .sorted((a, b) -> Integer.compare(b.getValue(), a.getValue()))
+                .toList();
+
         ArrayNode resultsArray = mapper.createArrayNode();
 
-        for (MetricRow row : rows) {
+        for (MetricRow row : sortedRows) {
             ObjectNode resultNode = mapper.createObjectNode();
             resultNode.put("entity", row.getEntity());
             resultNode.put("package", row.getPackageName());
@@ -46,7 +50,8 @@ public class JsonMetricExporter {
 
         root.set("results", resultsArray);
 
-        mapper.writerWithDefaultPrettyPrinter().writeValue(outputFile.toFile(), root);
+        mapper.writerWithDefaultPrettyPrinter()
+                .writeValue(outputFile.toFile(), root);
 
         return outputFile;
     }
