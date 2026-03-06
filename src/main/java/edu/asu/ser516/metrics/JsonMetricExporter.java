@@ -48,8 +48,9 @@ public class JsonMetricExporter {
 
         root.set("results", resultsArray);
 
-        mapper.writerWithDefaultPrettyPrinter()
-                .writeValue(outputFile.toFile(), root);
+        byte[] jsonBytes = mapper.writerWithDefaultPrettyPrinter()
+                .writeValueAsBytes(root);
+        ExportFileManager.atomicWrite(outputFile, jsonBytes);
 
         return outputFile;
     }
