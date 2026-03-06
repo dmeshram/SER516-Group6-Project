@@ -32,7 +32,8 @@ public class CsvMetricExporter {
             lines.add(toCsvLine(r));
         }
 
-        Files.write(outFile, lines);
+        String content = String.join(System.lineSeparator(), lines);
+        ExportFileManager.atomicWrite(outFile, content.getBytes(java.nio.charset.StandardCharsets.UTF_8));
 
         return outFile;
     }
