@@ -89,9 +89,11 @@ public class MethodCouplingAnalyzer {
         Map<String, Integer> fanIn = new HashMap<>();
         projectMethods.forEach(m -> fanIn.put(m, 0));
         methodAdjacencyList.values().forEach(callees ->
-                callees.forEach(callee ->
-                        fanIn.put(callee, fanIn.getOrDefault(callee, 0) + 1)
-                )
+                callees.forEach(callee -> {
+                    if (fanIn.containsKey(callee)) {
+                        fanIn.put(callee, fanIn.get(callee) + 1);
+                    }
+                })
         );
 
         return fanIn;
