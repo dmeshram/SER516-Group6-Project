@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  metrics-service:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - "./input:/input"
+    environment:
+      - "INPUT_PATH=/input"
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - "./grafana/provisioning:/etc/grafana/provisioning"
+    depends_on:
+      - metrics-service
+
