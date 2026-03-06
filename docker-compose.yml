@@ -1,0 +1,17 @@
+services:
+  metrics-service:
+    build: .
+    ports:
+      - "${METRICS_PORT:-8080}:8080"
+    volumes:
+      - "${INPUT_DIR:-./input}:/input"
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    volumes:
+      - "${GRAFANA_PROVISIONING_DIR:-./grafana/provisioning}:/etc/grafana/provisioning"
+    depends_on:
+      - metrics-service
+
