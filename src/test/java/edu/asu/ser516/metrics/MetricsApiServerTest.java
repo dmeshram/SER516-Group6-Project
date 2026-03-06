@@ -138,4 +138,88 @@ class MetricsApiServerTest {
             });
         }
     }
+
+    @Nested
+    @DisplayName("GET /metrics/fanin")
+    class FanInPath {
+        @Test
+        @DisplayName("Returns HTTP 200 for a valid project path")
+        void returns200ForValidPath() {
+            JavalinTest.test(MetricsApiServer.create(), (server, client) -> {
+                var response = client.get("/metrics/fanin?path=" + ProjectPath);
+                assertEquals(200, response.code());
+            });
+        }
+
+        @Test
+        @DisplayName("Response contains 'classLevel' key")
+        void responseContainsClassLevelKey() {
+            JavalinTest.test(MetricsApiServer.create(), (server, client) -> {
+                var response = client.get("/metrics/fanin?path=" + ProjectPath);
+                assertNotNull(response.body());
+                String body = response.body().string();
+                assertTrue(body.contains("\"classLevel\""),
+                        "Response must contain 'classLevel' key, got: " + body);
+            });
+        }
+
+        @Test
+        @DisplayName("Response contains 'methodLevel' key")
+        void responseContainsMethodLevelKey() {
+            JavalinTest.test(MetricsApiServer.create(), (server, client) -> {
+                var response = client.get("/metrics/fanin?path=" + ProjectPath);
+                assertNotNull(response.body());
+                String body = response.body().string();
+                assertTrue(body.contains("\"methodLevel\""),
+                        "Response must contain 'methodLevel' key, got: " + body);
+            });
+        }
+
+        @Test
+        @DisplayName("classLevel array contains 'class' and 'fanIn' keys")
+        void classLevelEntriesHaveCorrectKeys() {
+            JavalinTest.test(MetricsApiServer.create(), (server, client) -> {
+                var response = client.get("/metrics/fanin?path=" + ProjectPath);
+                assertNotNull(response.body());
+                String body = response.body().string();
+                assertTrue(body.contains("\"class\""),
+                        "classLevel entries must contain 'class' key");
+                assertTrue(body.contains("\"fanIn\""),
+                        "classLevel entries must contain 'fanIn' key");
+            });
+        }
+
+        @Test
+        @DisplayName("Returns HTTP 400 when 'path' query param is missing")
+        void returns400WhenPathMissing() {
+            JavalinTest.test(MetricsApiServer.create(), (server, client) -> {
+                var response = client.get("/metrics/fanin");
+                assertEquals(400, response.code());
+            });
+        }
+
+        @Test
+        @DisplayName("Returns HTTP 400 when 'path' points to a non-existent directory")
+        void returns400WhenPathDoesNotExist() {
+            JavalinTest.test(MetricsApiServer.create(), (server, client) -> {
+                var response = client.get("/metrics/fanin?path=/this/path/does/not/exist");
+                assertEquals(400, response.code());
+            });
+        }
+
+        @Test
+        @DisplayName("Two consecutive fanin requests return identical results")
+        void consecutiveFanInRequestsAreIdentical() {
+            JavalinTest.test(MetricsApiServer.create(), (server, client) -> {
+                String body1 = Objects.requireNonNull(client
+                        .get("/metrics/fanin?path=" + ProjectPath)
+                        .body()).string();
+                String body2 = Objects.requireNonNull(client
+                        .get("/metrics/fanin?path=" + ProjectPath)
+                        .body()).string();
+                assertEquals(body1, body2,
+                        "Repeated requests for the same path must return identical results");
+            });
+        }
+    }
 }

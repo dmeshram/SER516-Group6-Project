@@ -15,13 +15,13 @@ import java.util.stream.Collectors;
 public final class MetricsApiServer {
 
     private MetricsApiServer() {}
-    
+
     public static Javalin create() {
         return Javalin.create(config -> {
-            config.bundledPlugins.enableCors(cors -> cors.addRule(it -> it.anyHost()));
-        })
-        .get("/metrics/fanout", MetricsApiServer::handleFanOut)
-        .get("/metrics/fanin",  MetricsApiServer::handleFanIn);
+                    config.bundledPlugins.enableCors(cors -> cors.addRule(it -> it.anyHost()));
+                })
+                .get("/metrics/fanout", MetricsApiServer::handleFanOut)
+                .get("/metrics/fanin",  MetricsApiServer::handleFanIn);
     }
 
     public static void main(String[] args) {
@@ -73,20 +73,31 @@ public final class MetricsApiServer {
         try {
             List<Path> javaFiles = SourceScanner.findJavaFiles(root);
 
-            CouplingAnalyzer analyzer = new CouplingAnalyzer(javaFiles);
-            analyzer.analyze();
-            Map<String, Integer> fanIn = analyzer.getFanIn();
-
-            Map<String, Integer> sorted = fanIn.entrySet().stream()
+            // Class-level Fan-In via CouplingAnalyzer
+            CouplingAnalyzer classAnalyzer = new CouplingAnalyzer(javaFiles);
+            classAnalyzer.analyze();
+            Map<String, Integer> classLevelFanIn = classAnalyzer.getFanIn()
+                    .entrySet().stream()
                     .sorted((a, b) -> Integer.compare(b.getValue(), a.getValue()))
                     .collect(Collectors.toMap(
                             Map.Entry::getKey,
                             Map.Entry::getValue,
                             (e1, e2) -> e1,
-                            LinkedHashMap::new
-                    ));
+                            LinkedHashMap::new));
 
-            ctx.json(toFanInJsonArray(sorted));
+            // Method-level Fan-In via MethodCouplingAnalyzer
+            MethodCouplingAnalyzer methodAnalyzer = new MethodCouplingAnalyzer(javaFiles);
+            methodAnalyzer.analyze();
+            Map<String, Integer> methodLevelFanIn = methodAnalyzer.getFanIn()
+                    .entrySet().stream()
+                    .sorted((a, b) -> Integer.compare(b.getValue(), a.getValue()))
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            Map.Entry::getValue,
+                            (e1, e2) -> e1,
+                            LinkedHashMap::new));
+
+            ctx.json(toUnifiedFanInJson(classLevelFanIn, methodLevelFanIn));
 
         } catch (IOException e) {
             sendError(ctx, "Failed to scan project at path: " + root + " — " + e.getMessage());
@@ -99,8 +110,8 @@ public final class MetricsApiServer {
         if (pathParam == null || pathParam.isBlank()) {
             ctx.status(400);
             throw new IllegalArgumentException(
-                "Required query parameter 'path' is missing or empty. " +
-                "Usage: /metrics/fanout?path=/absolute/path/to/java/project"
+                    "Required query parameter 'path' is missing or empty. " +
+                            "Usage: /metrics/fanout?path=/absolute/path/to/java/project"
             );
         }
 
@@ -109,14 +120,14 @@ public final class MetricsApiServer {
         if (!Files.exists(root)) {
             ctx.status(400);
             throw new IllegalArgumentException(
-                "Path does not exist: " + pathParam
+                    "Path does not exist: " + pathParam
             );
         }
 
         if (!Files.isDirectory(root)) {
             ctx.status(400);
             throw new IllegalArgumentException(
-                "Path is not a directory: " + pathParam
+                    "Path is not a directory: " + pathParam
             );
         }
 
@@ -135,10 +146,10 @@ public final class MetricsApiServer {
         int n = fanOut.size();
         for (Map.Entry<String, Integer> e : fanOut.entrySet()) {
             sb.append("  {\"class\":\"")
-              .append(jsonEscape(e.getKey()))
-              .append("\",\"fanOut\":")
-              .append(e.getValue())
-              .append("}");
+                    .append(jsonEscape(e.getKey()))
+                    .append("\",\"fanOut\":")
+                    .append(e.getValue())
+                    .append("}");
             if (++i < n) sb.append(",");
             sb.append("\n");
         }
@@ -146,20 +157,38 @@ public final class MetricsApiServer {
         return sb.toString();
     }
 
-    private static String toFanInJsonArray(Map<String, Integer> fanIn) {
-        StringBuilder sb = new StringBuilder("[\n");
-        int i = 0;
-        int n = fanIn.size();
-        for (Map.Entry<String, Integer> e : fanIn.entrySet()) {
-            sb.append("  {\"class\":\"")
-              .append(jsonEscape(e.getKey()))
-              .append("\",\"fanIn\":")
-              .append(e.getValue())
-              .append("}");
+    private static String toUnifiedFanInJson(Map<String, Integer> classLevel,
+                                             Map<String, Integer> methodLevel) {
+        StringBuilder sb = new StringBuilder("{\n");
+
+        // classLevel array
+        sb.append("  \"classLevel\": [\n");
+        int i = 0, n = classLevel.size();
+        for (Map.Entry<String, Integer> e : classLevel.entrySet()) {
+            sb.append("    {\"class\":\"")
+                    .append(jsonEscape(e.getKey()))
+                    .append("\",\"fanIn\":")
+                    .append(e.getValue())
+                    .append("}");
             if (++i < n) sb.append(",");
             sb.append("\n");
         }
-        sb.append("]");
+        sb.append("  ],\n");
+
+        // methodLevel array
+        sb.append("  \"methodLevel\": [\n");
+        i = 0; n = methodLevel.size();
+        for (Map.Entry<String, Integer> e : methodLevel.entrySet()) {
+            sb.append("    {\"method\":\"")
+                    .append(jsonEscape(e.getKey()))
+                    .append("\",\"fanIn\":")
+                    .append(e.getValue())
+                    .append("}");
+            if (++i < n) sb.append(",");
+            sb.append("\n");
+        }
+        sb.append("  ]\n}");
+
         return sb.toString();
     }
 
