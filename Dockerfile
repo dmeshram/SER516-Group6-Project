@@ -16,5 +16,12 @@ RUN apt-get update && \
 
 COPY --from=build /app/target/*.jar /app/app.jar
 
+ENV OUTPUT_DIR=/output
+
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["sh", "-c", "\
+  if [ \"$MODE\" = 'pipeline' ]; then \
+    java -cp app.jar edu.asu.ser516.metrics.MetricPipelineMain \"$INPUT_PATH\" \"$OUTPUT_DIR\"; \
+  else \
+    java -jar app.jar; \
+  fi"]
