@@ -1,4 +1,4 @@
-package fixtures.fanin_multiple_caller;
+package fixtures.fanin_multiple_callers;
 
 public class CallerTwo {
     public void execute() {

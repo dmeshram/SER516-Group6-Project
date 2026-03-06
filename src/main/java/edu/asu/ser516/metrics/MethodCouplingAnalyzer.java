@@ -84,4 +84,12 @@ public class MethodCouplingAnalyzer {
         return methodAdjacencyList.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size()));
     }
+
+    public Map<String, Set<String>> getMethodAdjacencyList() {
+        return methodAdjacencyList;
+    }
+
+    public Set<String> getProjectMethods() {
+        return projectMethods;
+    }
 }
