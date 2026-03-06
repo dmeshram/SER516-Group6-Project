@@ -84,4 +84,16 @@ public class MethodCouplingAnalyzer {
         return methodAdjacencyList.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size()));
     }
+
+    public Map<String, Integer> getFanIn() {
+        Map<String, Integer> fanIn = new HashMap<>();
+        projectMethods.forEach(m -> fanIn.put(m, 0));
+        methodAdjacencyList.values().forEach(callees ->
+                callees.forEach(callee ->
+                        fanIn.put(callee, fanIn.getOrDefault(callee, 0) + 1)
+                )
+        );
+
+        return fanIn;
+    }
 }
