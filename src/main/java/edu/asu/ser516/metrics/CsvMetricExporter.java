@@ -10,14 +10,17 @@ import java.util.Objects;
 
 public class CsvMetricExporter {
 
-    private static final String FILE_NAME = "fanout.csv";
     private static final String HEADER = "metricType,scope,entity,value,packageName,filePath";
 
-    public void export(List<MetricRow> rows, Path outDir) throws IOException {
+    public Path export(List<MetricRow> rows, Path outDir) throws IOException {
         Objects.requireNonNull(outDir, "outDir");
 
-        Files.createDirectories(outDir);
-        Path outFile = outDir.resolve(FILE_NAME);
+        Path outFile = ExportFileManager.prepareOutputFile(
+                outDir,
+                (rows == null || rows.isEmpty())
+                        ? "unknown"
+                        : rows.get(0).getMetricType().name(),
+                "csv");
 
         List<String> lines = new ArrayList<>();
         lines.add(HEADER);
@@ -30,6 +33,8 @@ public class CsvMetricExporter {
         }
 
         Files.write(outFile, lines);
+
+        return outFile;
     }
 
     private static String toCsvLine(MetricRow r) {
@@ -41,8 +46,7 @@ public class CsvMetricExporter {
                 r.getEntity(),
                 String.valueOf(r.getValue()),
                 nullToEmpty(r.getPackageName()),
-                nullToEmpty(r.getFilePath())
-        );
+                nullToEmpty(r.getFilePath()));
     }
 
     private static String nullToEmpty(String s) {
