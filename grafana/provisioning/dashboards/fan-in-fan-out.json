@@ -1,0 +1,26 @@
+{
+  "uid": "fan-in-fan-out",
+  "title": "Fan-In / Fan-Out Metrics",
+  "tags": ["ser516", "fan-in", "fan-out"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "text",
+      "title": "Fan-In / Fan-Out Overview",
+      "gridPos": { "h": 4, "w": 24, "x": 0, "y": 0 },
+      "options": {
+        "mode": "markdown",
+        "content": "# Fan-In / Fan-Out Metrics\\n\\nThis dashboard is provisioned automatically by Grafana.\\n\\nConnect panels to the Metrics API datasource (`Metrics API`) to visualize fan-in and fan-out values."
+      }
+    }
+  ]
+}
+

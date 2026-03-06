@@ -57,6 +57,18 @@ pipeline {
             }
         }
 
+        stage('Service Test') {
+            steps {
+                sh 'docker compose up -d --build'
+                sh 'sleep 60'
+                sh 'bash scripts/service-test.sh'
+            }
+            post {
+                always {
+                    sh 'docker compose down || true'
+                }
+            }
+        }
     }
 
     post {
