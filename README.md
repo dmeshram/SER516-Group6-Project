@@ -146,7 +146,30 @@ Successfully tagged ser516-metrics:latest
 
 The multi-stage build compiles the project inside a Maven container and produces a minimal runtime image using `eclipse-temurin:17-jre-jammy`. No local Java or Maven installation is needed.
 
-### Step 3 — Run the container
+### Step 3 — Configure environment (optional)
+
+You can customize ports and host paths used by Docker Compose via the `.env` file in the project root:
+
+```bash
+METRICS_PORT=8080
+GRAFANA_PORT=3000
+INPUT_DIR=./input
+GRAFANA_PROVISIONING_DIR=./grafana/provisioning
+```
+
+`docker-compose.yml` uses these variables so paths and ports are **not hardcoded**. You can override them either by editing `.env` or exporting environment variables before running Compose.
+
+### Step 4 — Run the container stack with Docker Compose
+
+From the project root:
+
+```bash
+docker compose up -d --build
+```
+
+This will build and start both the metrics service and Grafana using the configured environment values.
+
+### Alternative — Run a single container manually
 
 **Analyze the included sample project:**
 
@@ -165,7 +188,7 @@ Metrics API server started on port 8080
 
 > **macOS/Linux note:** The quotes around `"$(pwd)/input:/input"` are required to handle uppercase letters or spaces in your directory path.
 
-### Step 4 — Query the API
+### Step 5 — Query the API
 
 Open a second terminal while the container is running:
 
