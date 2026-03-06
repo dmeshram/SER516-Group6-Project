@@ -17,7 +17,7 @@ ENV OUTPUT_DIR=/output
 EXPOSE 8080
 ENTRYPOINT ["sh", "-c", "\
   if [ \"$MODE\" = 'pipeline' ]; then \
-    java -cp app.jar edu.asu.ser516.metrics.MetricsPipelineMain \"$INPUT_PATH\" \"$OUTPUT_DIR\"; \
+    java -cp app.jar edu.asu.ser516.metrics.MetricPipelineMain \"$INPUT_PATH\" \"$OUTPUT_DIR\"; \
   else \
     java -jar app.jar; \
   fi"]
