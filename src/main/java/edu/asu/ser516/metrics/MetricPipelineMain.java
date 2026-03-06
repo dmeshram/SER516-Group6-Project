@@ -7,23 +7,27 @@ public class MetricPipelineMain {
 
     public static void main(String[] args) throws Exception {
 
-        String inputPathStr = (args.length >= 1) ? args[0]
-                : System.getenv("INPUT_PATH");
-        String outDirStr = (args.length >= 2) ? args[1]
-                : System.getenv().getOrDefault("OUTPUT_DIR", "metrics-output");
+        String inputPathStr = resolveConfig("INPUT_PATH",  args, 0, null);
+        String outDirStr    = resolveConfig("OUTPUT_DIR",  args, 1, "metrics-output");
 
         if (inputPathStr == null || inputPathStr.isBlank()) {
-            System.err.println("ERROR: inputPath is required. " +
-                    "Pass as first argument or set INPUT_PATH env var.");
+            System.err.println("ERROR: inputPath is required.");
+            System.err.println("  Usage: java -jar app.jar <inputPath> [outputDir]");
+            System.err.println("  Or set env var: INPUT_PATH=/path/to/project");
             System.exit(1);
         }
 
         Path inputPath = Path.of(inputPathStr);
-        Path outDir   = Path.of(outDirStr);
+        Path outDir    = Path.of(outDirStr);
 
         if (!inputPath.toFile().exists()) {
-            System.err.println("ERROR: inputPath does not exist: " + inputPath);
-            System.exit(1);
+            System.err.println("ERROR: inputPath does not exist: " + inputPath.toAbsolutePath());
+            System.exit(2);
+        }
+
+        if (!inputPath.toFile().isDirectory()) {
+            System.err.println("ERROR: inputPath is not a directory: " + inputPath.toAbsolutePath());
+            System.exit(2);
         }
 
         System.out.println("Scanning: " + inputPath.toAbsolutePath());
@@ -54,5 +58,18 @@ public class MetricPipelineMain {
     private static String extractPackage(String fqcn) {
         int lastDot = fqcn.lastIndexOf('.');
         return (lastDot > 0) ? fqcn.substring(0, lastDot) : "";
+    }
+
+    private static String resolveConfig(String envKey, String[] args,
+                                        int argIndex, String defaultValue) {
+        if (args.length > argIndex && args[argIndex] != null
+                && !args[argIndex].isBlank()) {
+            return args[argIndex];
+        }
+        String envVal = System.getenv(envKey);
+        if (envVal != null && !envVal.isBlank()) {
+            return envVal;
+        }
+        return defaultValue;
     }
 }
