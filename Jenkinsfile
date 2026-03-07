@@ -36,8 +36,7 @@ pipeline {
                     sh '''
                        mkdir -p metrics-output
                        mvn -B -ntp exec:java \
-                           -Dexec.mainClass="edu.asu.ser516.metrics.FanOutComputerMain" \
-                           -Dexec.args=". json metrics-output" \
+                           -Dexec.args=". metrics-output" \
                            -Dmaven.repo.local=/root/.m2/repository
                     '''
                 }
