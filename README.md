@@ -463,40 +463,24 @@ Derived by inverting the Fan-Out relationships. For each class `B`, Fan-In equal
 ## Output Results
 You can check the output, in "Out" folder in root directory.
 
-## Grafana + PostgreSQL (metrics for dashboards)
+## Grafana + PostgreSQL Dashboards
 
-Fan-out results can be written to PostgreSQL so Grafana can visualize them (snapshot and time series).
+The project runs an automated Docker stack with Grafana, PostgreSQL, and dashboards for Fan-In and Fan-Out metrics.
 
-### 1. Start PostgreSQL
-
+### 1. Start the Stack (or Wipe & Restart)
 ```bash
+docker compose down -v --remove-orphans
 docker compose up -d
 ```
 
-This starts Postgres on port 5432 and runs `docker/init-fanout.sql` to create the `fan_out_metrics` table.
-
-### 2. Run the app with DB write
-
-Set `JDBC_URL` (and optionally `JDBC_USER`, `JDBC_PASSWORD`), then run the fan-out pipeline as usual. Each run inserts a new snapshot (one row per class with the same timestamp).
-
-**Example (from project root):**
-
+### 2. Generate the Metrics
+Run this inside the container to generate files and snapshot metrics to PostgreSQL:
 ```bash
-export JDBC_URL="jdbc:postgresql://localhost:5432/metrics"
-export JDBC_USER="grafana"
-export JDBC_PASSWORD="grafana"
-
-mvn exec:java \
-  -Dexec.mainClass="edu.asu.ser516.metrics.FanOutComputerMain" \
-  -Dexec.args="input/Simple-Java-Calculator/src"
+docker exec -e JDBC_URL="jdbc:postgresql://postgres-metrics:5432/metrics" -e JDBC_USER="grafana" -e JDBC_PASSWORD="grafana" ser516-group6-project-metrics-service-1 java -cp app.jar edu.asu.ser516.metrics.FanOutComputerMain /input both /out
 ```
 
-If `JDBC_URL` is not set, the app skips the database write and behaves as before.
-
-### 3. Grafana
-
-- Add a **PostgreSQL** data source: host `localhost:5432` (or `host.docker.internal:5432` if Grafana runs in Docker), database `metrics`, user `grafana`, password `grafana`.
-- Use the `fan_out_metrics` table for panels (e.g. snapshot = latest `recorded_at`, time series = filter by `recorded_at`).
+### 3. View the Dashboards
+Navigate to **http://localhost:3000** (Login: `admin` / `admin`). Data will automatically show in the provisioned dashboards.
 
 ## CI/CD - Jenkins Integration
 This project includes:
