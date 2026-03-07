@@ -445,7 +445,6 @@
                     "format": "table",
                     "rawQuery": true,
                     "rawSql": "SELECT class_name AS \"Class\", fan_out AS \"Fan-Out\"\nFROM fan_out_metrics\nWHERE recorded_at = (SELECT MAX(recorded_at) FROM fan_out_metrics)\n  AND fan_out >= ${min_fanout}\n  AND class_name LIKE '%${class_filter}%'\nORDER BY fan_out DESC;",
-                    "rawSql": "SELECT class_name AS \"Class\", fan_out AS \"Fan-Out\"\nFROM fan_out_metrics\nWHERE recorded_at = (SELECT MAX(recorded_at) FROM fan_out_metrics)\n  AND fan_out >= ${min_fanout}\n  AND class_name LIKE '%${class_filter}%'\nORDER BY fan_out DESC;",
                     "refId": "A"
                 }
             ]
