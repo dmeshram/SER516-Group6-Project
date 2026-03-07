@@ -2,6 +2,7 @@ apiVersion: 1
 
 datasources:
   - name: PostgreSQL
+    uid: postgres-metrics
     type: postgres
     access: proxy
     url: postgres-metrics:5432
@@ -12,5 +13,5 @@ datasources:
     jsonData:
       sslmode: disable
       postgresVersion: 1600
-    isDefault: true
+    isDefault: false
     editable: true
