@@ -60,5 +60,8 @@ public class FanOutComputerMain {
                 System.out.println("Wrote: " + json.toAbsolutePath());
             }
         }
+
+        // 8) Optional: write to PostgreSQL for Grafana (when JDBC_URL is set)
+        MetricDbWriter.writeFanOut(fanOutSorted);
     }
 }
